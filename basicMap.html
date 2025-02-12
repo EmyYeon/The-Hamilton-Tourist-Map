@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Map</title>
+    <style>
+        #map{
+            height: 600px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <button onClick="FindLocation()">Find Location</button>
+    <button onClick="RemoveLocation()">Remove Location</button>
+    <button onClick="FindParks()">Find Parks</button>
+    <script async
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRMdnuEynPk-g2eHKla57SraWedywmzPI&loading=async&callback=initMap&libraries=marker">
+    </script>
+    <script>
+        let map, marker;
+
+        function initMap() {
+       
+        map = new google.maps.Map(document.getElementById("map"), {
+            center: { lat: 43.2387, lng: -79.8881 },
+            zoom: 12,
+            mapId: "2d79b42b15fa4298"
+        });
+
+        }
+
+        function FindLocation(){
+            navigator.geolocation.getCurrentPosition(function(position){
+                const pos = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                map.setCenter(pos);
+                    marker = new google.maps.marker.AdvancedMarkerElement({
+                    position: pos,
+                    map: map,
+                    title: "You are here",
+                });
+            });
+        }
+        function RemoveLocation() {
+            marker.setMap(null);
+            marker.position = null;
+
+        }
+
+        function FindParks() {
+
+        }
+        
+    </script>
+    
+</body>
+</html>

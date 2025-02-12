@@ -21,12 +21,13 @@
     <button id="search">Search</button><br>
     <button id="findLocation">Find Location</button>
     <button id="removeLocation">Remove Location</button>
-    <button id="findParks">Find Parks</button>
+    <button id="findParks">Find Parks</button><br>
+    <span id="coords" style="font-size:22px"></span>
     <script async
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRMdnuEynPk-g2eHKla57SraWedywmzPI&loading=async&callback=initMap&libraries=marker">
     </script>
     <script>
-        let map, marker;
+        let map, marker, geoCoder;
 
         function initMap() {
        
@@ -35,6 +36,7 @@
             zoom: 12,
             mapId: "2d79b42b15fa4298"
         });
+        geoCoder = new google.maps.Geocoder();
 
         }
 
@@ -43,27 +45,27 @@
         }
 
         function geoMarker(position){
-                const pos = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
-                
-                const iconLocation = document.createElement("img");
-                iconLocation.src="https://maps.google.com/mapfiles/kml/paddle/pink-stars.png";
-                iconLocation.className="iconClass";
+            const pos = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
             
-                map.setCenter(pos);
-                    marker = new google.maps.marker.AdvancedMarkerElement({
-                    position: pos,
-                    map: map,
-                    title: "You are here",
-                    content: iconLocation
-                });
-            }
+            const iconLocation = document.createElement("img");
+            iconLocation.src="https://maps.google.com/mapfiles/kml/paddle/pink-stars.png";
+            iconLocation.className="iconClass";
+        
+            map.setCenter(pos);
+                marker = new google.maps.marker.AdvancedMarkerElement({
+                position: pos,
+                map: map,
+                title: "You are here",
+                content: iconLocation
+            });
+        }
         
         function RemoveLocation() {
             marker.setMap(null);
-            marker.position = null;
+            //marker.position = null;
 
         }
 
@@ -73,6 +75,35 @@
         document.getElementById("findLocation").addEventListener("click", FindLocation);
         document.getElementById("removeLocation").addEventListener("click", RemoveLocation);
         document.getElementById("findParks").addEventListener("click", FindParks);
+        
+        function codeAddress() {
+            const address = document.getElementById("address").value;
+            const iconDestination = document.createElement("img");
+            iconDestination.src="https://maps.google.com/mapfiles/kml/paddle/pink-stars.png";
+            iconDestination.className="iconClass";
+
+
+            geoCoder.geocode({ address: address }, (results, status) => {
+                if (status === "OK") {
+                    map.setCenter(results[0].geometry.location);
+                    if (marker) marker.setMap(null);
+                    let marker2 = new google.maps.marker.AdvancedMarkerElement({
+                        map: map,
+                        position: results[0].geometry.location,
+                        title: "You are here",
+                        content: iconDestination
+                    });
+                    document.getElementById("coords").innerText = 
+                    "Latitude: " + results[0].geometry.location.lat() + " Longitude: " + results[0].geometry.location.lng();
+
+                } else {
+                    alert("Geocode was not successful for the following reason: " + status);
+                }
+            });
+        }
+
+        document.getElementById("search").addEventListener("click", codeAddress);
+        
     </script>
     
 </body>

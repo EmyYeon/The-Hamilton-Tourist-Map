@@ -10,8 +10,8 @@
             width: 100%;
         }
         .iconClass{
-            width: 40px;
-            height: 40px;
+            width: 30px;
+            height: 30px;
         }
     </style>
 </head>
@@ -21,8 +21,7 @@
     <button id="search">Search</button><br>
     <button id="findLocation">Find Location</button>
     <button id="removeLocation">Remove Location</button>
-    <button id="findParks">Find Parks</button><br>
-    <button id="findWashrooms">Find Washrooms</button><br>
+
     <span id="coords" style="font-size:22px"></span>
     <span id="details" style="font-size:24px;"></span>
 
@@ -32,7 +31,7 @@
     <script src="tourism.js"></script>
     <script>
         let map, marker, geoCoder , destMarker, infoWindow, infoContent;
-        let newMarker, markers = [];
+        let markers = [];
         function initMap() {
        
         map = new google.maps.Map(document.getElementById("map"), {
@@ -59,6 +58,7 @@
         // content: infoContent
         // });
         let infoWindow = new google.maps.InfoWindow();
+        
         function markerClicked() {
             infoWindow.close();
             infoWindow.setContent(
@@ -74,33 +74,34 @@
         }
         for (let i = 0; i < tourism.features.length; i++) {
             if (tourism.features[i].properties.CATEGORY === "Accommodations") {
-                iconOption = "https://mapicons.mapsmarker.com/wp-content/uploads/mapicons/shape-default/color-8c4eb8/shapecolor-color/shadow-1/border-dark/symbolstyle-white/symbolshadowstyle-dark/gradient-no/lodging-2.png";
+                iconOption = "https://maps.google.com/mapfiles/kml/shapes/lodging.png";
             } else if (tourism.features[i].properties.CATEGORY === "Art Galleries") {
-                iconOption = "https://mapicons.mapsmarker.com/wp-content/uploads/mapicons/shape-default/color-c259b5/shapecolor-dark/shadow-1/border-white/symbolstyle-white/symbolshadowstyle-no/gradient-no/museum_paintings.png";
+                iconOption = "https://maps.google.com/mapfiles/kml/shapes/marina.png";
             } else if (tourism.features[i].properties.CATEGORY === "Outdoors") {
-                iconOption = "https://mapicons.mapsmarker.com/wp-content/uploads/mapicons/shape-default/color-c259b5/shapecolor-color/shadow-1/border-dark/symbolstyle-white/symbolshadowstyle-dark/gradient-no/walkingtour.png";
+                iconOption = "https://maps.google.com/mapfiles/kml/shapes/hiker.png";
             } else if (tourism.features[i].properties.CATEGORY === "Attractions") {
-                iconOption = "https://mapicons.mapsmarker.com/wp-content/uploads/mapicons/shape-default/color-66c547/shapecolor-color/shadow-1/border-dark/symbolstyle-white/symbolshadowstyle-dark/gradient-no/convent-2.png";
+                iconOption = "https://maps.google.com/mapfiles/kml/shapes/marina.png";
             } else if (tourism.features[i].properties.CATEGORY === "Farms") {
-                iconOption = "https://mapicons.mapsmarker.com/wp-content/uploads/mapicons/shape-default/color-128e4d/shapecolor-dark/shadow-1/border-white/symbolstyle-white/symbolshadowstyle-no/gradient-no/farm-2.png";
+                iconOption = "https://maps.google.com/mapfiles/kml/shapes/horsebackriding.png";
             } else if (tourism.features[i].properties.CATEGORY === "Museums") {
-                iconOption = "https://mapicons.mapsmarker.com/wp-content/uploads/mapicons/shape-default/color-c259b5/shapecolor-color/shadow-1/border-dark/symbolstyle-white/symbolshadowstyle-dark/gradient-no/museum_crafts.png";
+                iconOption = "https://maps.google.com/mapfiles/kml/shapes/marina.png";
             } else if (tourism.features[i].properties.CATEGORY === "Farmers' Market") {
-                iconOption = "https://mapicons.mapsmarker.com/wp-content/uploads/mapicons/shape-default/color-128e4d/shapecolor-color/shadow-1/border-dark/symbolstyle-white/symbolshadowstyle-dark/gradient-no/farmstand.png";
+                iconOption = "https://maps.google.com/mapfiles/kml/shapes/grocery.png";
             } else if (tourism.features[i].properties.CATEGORY === "Countryside") {
-                iconOption = "https://mapicons.mapsmarker.com/wp-content/uploads/mapicons/shape-default/color-128e4d/shapecolor-color/shadow-1/border-dark/symbolstyle-white/symbolshadowstyle-dark/gradient-no/beautifulview.png";
+                iconOption = "https://maps.google.com/mapfiles/kml/shapes/hiker.png";
             } else if (tourism.features[i].properties.CATEGORY === "Shopping") {
-                iconOption = "https://mapicons.mapsmarker.com/wp-content/uploads/mapicons/shape-default/color-5ec8bd/shapecolor-light/shadow-1/border-white/symbolstyle-dark/symbolshadowstyle-no/gradient-no/mall.png";
+                iconOption = "https://maps.google.com/mapfiles/kml/shapes/grocery.png";
             } else if (tourism.features[i].properties.CATEGORY === "Sports and Recreation") {
-                iconOption = "https://mapicons.mapsmarker.com/wp-content/uploads/mapicons/shape-default/color-ff8a22/shapecolor-color/shadow-1/border-dark/symbolstyle-white/symbolshadowstyle-dark/gradient-no/indoor-arena.png";
+                iconOption = "https://maps.google.com/mapfiles/kml/shapes/play.png";
             } else if (tourism.features[i].properties.CATEGORY === "Waterfalls") {
-                iconOption = "https://mapicons.mapsmarker.com/wp-content/uploads/mapicons/shape-default/color-29c2ff/shapecolor-color/shadow-1/border-dark/symbolstyle-white/symbolshadowstyle-dark/gradient-no/waterfall-2.png";
+                iconOption = "https://maps.google.com/mapfiles/kml/shapes/water.png";
             } else { //Performing Arts
-                iconOption = "https://mapicons.mapsmarker.com/wp-content/uploads/mapicons/shape-default/color-c259b5/shapecolor-color/shadow-1/border-dark/symbolstyle-white/symbolshadowstyle-dark/gradient-no/theater.png";
+                iconOption = "https://maps.google.com/mapfiles/kml/shapes/arts.png";
             }
 
             const iconContent = document.createElement("img");
             iconContent.src = iconOption;
+            iconContent.className = "iconClass";
             
             newMarker = new google.maps.marker.AdvancedMarkerElement({
                 position: {
@@ -119,7 +120,7 @@
             newMarker.URL = tourism.features[i].properties.URL;
             newMarker.DESCRIPTION = tourism.features[i].properties.DESCRIPTION;
 
-            newMarker.addEventListener( "click", markerClicked);
+            google.maps.event.addListener(newMarker, "click", markerClicked);
             markers.push(newMarker); 
             
         }
@@ -154,12 +155,8 @@
             //marker.position = null;
         }
 
-        function FindParks() {
-
-        }
         document.getElementById("findLocation").addEventListener("click", FindLocation);
-        document.getElementById("removeLocation").addEventListener("click", RemoveLocation);
-        document.getElementById("findParks").addEventListener("click", FindParks);
+        document.getElementById("removeLocation").addEventListener("click", RemoveLocation); 
         document.getElementById("search").addEventListener("click", codeAddress);
 
         function codeAddress() {

@@ -23,11 +23,13 @@
     <button id="removeLocation">Remove Location</button>
     <button id="findParks">Find Parks</button><br>
     <span id="coords" style="font-size:22px"></span>
+    <span id="details" style="font-size:24px;"></span>
+
     <script async
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRMdnuEynPk-g2eHKla57SraWedywmzPI&loading=async&callback=initMap&libraries=marker">
     </script>
     <script>
-        let map, marker, geoCoder;
+        let map, marker, geoCoder , destMarker, infoWindow, infoContent;
 
         function initMap() {
        
@@ -37,6 +39,25 @@
             mapId: "2d79b42b15fa4298"
         });
         geoCoder = new google.maps.Geocoder();
+
+        // Info Window
+        // infoContent = "<h3>Name: </h3>" +
+        //                 "<p>Address:</p>" + 
+        //                 "<p>Phone: </p>" + 
+        //                 "<p>Website: </p>";
+           
+                        
+
+        // infoContent = "<h3>Tim Hortons Field</h3>" +
+        //               "<p>Home of the <a href='https://ticats.ca' target='_blank'>" +
+        //               "Tiger-Cats</a> and <a href='https://forgefc.canpl.ca' target='_blank'>" + 
+        //               "Forge FC</a>, with a capacity of 24,000. <br />" +
+        //               "<img src='https://upload.wikimedia.org/wikipedia/en/thumb/b/b4/Hamilton_Tiger-Cats_logo.svg/1200px-Hamilton_Tiger-Cats_logo.svg.png' width='100' />";
+        // infoWindow = new google.maps.InfoWindow({
+        // content: infoContent
+        // });
+
+
 
         }
 
@@ -64,9 +85,9 @@
         }
         
         function RemoveLocation() {
-            marker.setMap(null);
+            if (marker)
+                marker.setMap(null);
             //marker.position = null;
-
         }
 
         function FindParks() {
@@ -75,7 +96,8 @@
         document.getElementById("findLocation").addEventListener("click", FindLocation);
         document.getElementById("removeLocation").addEventListener("click", RemoveLocation);
         document.getElementById("findParks").addEventListener("click", FindParks);
-        
+        document.getElementById("search").addEventListener("click", codeAddress);
+
         function codeAddress() {
             const address = document.getElementById("address").value;
             const iconDestination = document.createElement("img");
@@ -86,13 +108,14 @@
             geoCoder.geocode({ address: address }, (results, status) => {
                 if (status === "OK") {
                     map.setCenter(results[0].geometry.location);
-                    if (marker) marker.setMap(null);
-                    let marker2 = new google.maps.marker.AdvancedMarkerElement({
+                    if (destMarker) destMarker.setMap(null);
+                        destMarker = new google.maps.marker.AdvancedMarkerElement({
                         map: map,
                         position: results[0].geometry.location,
-                        title: "You are here",
+                        title: "Destination",
                         content: iconDestination
                     });
+                    //geoMarker(results[0].geometry.location);
                     document.getElementById("coords").innerText = 
                     "Latitude: " + results[0].geometry.location.lat() + " Longitude: " + results[0].geometry.location.lng();
 
@@ -100,9 +123,22 @@
                     alert("Geocode was not successful for the following reason: " + status);
                 }
             });
+        //     if (destMarker) {
+        //     destMarker.addListener("click", () => {
+        //         map.setZoom(8);
+        //         map.setCenter(destMarker.getPosition());
+        //         infoWindow.open({
+        //             anchor: destMarker,
+        //             shouldFocus: false
+        //         });
+        //         document.getElementById("details").innerHTML = "Tim Hortons Field";
+        //     });
+        // }
         }
 
-        document.getElementById("search").addEventListener("click", codeAddress);
+        
+
+        
         
     </script>
     

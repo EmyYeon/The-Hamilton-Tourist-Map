@@ -71,7 +71,7 @@
     </script>
     <script src="tourism.js"></script>
     <script>
-        let map, marker, myPosition, geoCoder, destMarker, infoWindow, infoContent;
+        let map, marker, pos, geoCoder, destMarker, infoWindow, infoContent;
         let markers = [];   
         let directionsService, directionsRenderer;
 
@@ -97,7 +97,7 @@
                 <p><strong>Address:</strong> ${this.ADDRESS}</p>
                 <p><strong>Phone:</strong> ${this.PHONE}</p>
                 <p><strong><a href="${this.URL}" target="_blank">Website</a></strong></p>
-                <a href="#" class="btn btn-primary">Direction</a>
+                <a id="direction" onclick="calcRoute()" class="btn btn-primary">Direction</a>
                 <p><strong>Description:</strong> ${this.DESCRIPTION}</p>
                 <p><strong>Coordinates:</strong> ${this.COORDINATES}</p>
                 </div>
@@ -112,6 +112,7 @@
 
             infoWindow.setContent(infoContent2);
             infoWindow.open(map, this);
+            
 
         }
 
@@ -168,6 +169,10 @@
             google.maps.event.addListener(newMarker, "click", markerClicked);
             markers.push(newMarker);          
         }
+        directionsService = new google.maps.DirectionsService();
+    directionsRenderer = new google.maps.DirectionsRenderer();
+    directionsRenderer.setMap(map);
+        
     }
     let category = document.getElementById("inputGroupSelect"); 
 
@@ -192,25 +197,36 @@
     }
     document.getElementById("all").addEventListener("click", displayAll);
   
-    // directionsService = new google.maps.DirectionsService();
-    // directionsRenderer = new google.maps.DirectionsRenderer();
-    // directionsRenderer.setMap(map);
+    
 
-    // function calcRoute() {
-    //     const start = new google.maps.LatLng(this.COORDINATES[1], this.COORDINATES[0]);
-    //     const end = new google.maps.LatLng(this.COORDINATES[1], this.COORDINATES[0]);
-    //     const request = {
-    //         origin: start,
-    //         destination: end,
-    //         travelMode: google.maps.TravelMode.DRIVING
-    //     };
-    //     directionsService.route(request, function(result, status) {
-    //         if (status == "OK") {
-    //             directionsRenderer.setDirections(result);
-    //         }
-    //     });
-    // }
+    function calcRoute() {
+        // const start = new google.maps.LatLng(pos.lat , pos.lng);
+        // const end = new google.maps.LatLng(this.COORDINATES[1], this.COORDINATES[0]);
+        // const request = {
+        //     origin: start,
+        //     destination: end,
+        //     travelMode: google.maps.TravelMode.DRIVING
+        // };
+        // directionsService.route(request, function(result, status) {
+        //     if (status == "OK") {
+        //         directionsRenderer.setDirections(result);
+        //     }
+        // });
+        const request = {
+        origin: "135 Fennell Avenue West, Hamilton, Ontario",
+        destination: "64 Melrose Avenue North, Hamilton, Ontario",
+        travelMode: "DRIVING"
+      };
 
+      directionsService.route(request, function(result, status) {
+          if (status == 'OK') {
+             directionsRenderer.setDirections(result);
+          }
+      });
+    }
+    
+
+    let myLocation={};
     //Find user's location
     function FindLocation(){
         navigator.geolocation.getCurrentPosition(geoMarker);
@@ -218,11 +234,11 @@
 
     //Display user's location as marker
     function geoMarker(position){
-        pos = {
+        const pos = {
             lat: position.coords.latitude,
             lng: position.coords.longitude
         };
-        
+        console.log("My location "+ pos.lat + ", " + pos.lng);
         const iconLocation = document.createElement("img");
         iconLocation.src="https://maps.google.com/mapfiles/kml/paddle/pink-stars.png";
         iconLocation.className="iconClass";

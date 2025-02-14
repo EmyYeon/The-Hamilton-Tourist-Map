@@ -103,27 +103,30 @@
         //Information for the markers
         function markerClicked() {
             infoWindow.close();
-            infoWindow.setContent(
-                "<h5>" + this.TITLE + "</h5>" +
+
+            const infoContent2 = `
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                <h5 class="card-title">${this.TITLE}</h5>
+                <p><strong>Address:</strong> ${this.ADDRESS}</p>
+                <p><strong>Phone:</strong> ${this.PHONE}</p>
+                <p><strong><a href="${this.URL}" target="_blank">Website</a></strong></p>
+                <a href="#" class="btn btn-primary">Direction</a>
+                <p><strong>Description:</strong> ${this.DESCRIPTION}</p>
+                </div>
+            </div>
+            `;
+            const infoContent= "<h5>" + this.TITLE + "</h5>" +
                 "<p><strong>Category:</strong> " + this.CATEGORY + "</p>" +
                 "<p><strong>Address:</strong> " + this.ADDRESS + "</p>" +
                 "<p><strong>Phone:</strong> " + this.PHONE + "</p>" +
                 "<p><strong>Website:</strong> <a href='" + this.URL + "' target='_blank'>" + this.URL + "</a></p>" +
-                "<p><strong>Description:</strong> " + this.DESCRIPTION + "</p>"
-            );
+                "<p><strong>Description:</strong> " + this.DESCRIPTION + "</p>";
+
+            infoWindow.setContent(infoContent2);
             infoWindow.open(map, this);
 
         }
-
-<div class="card" style="width: 18rem;">
-    <div class="card-body">
-    <h5 class="card-title">Card title</h5>
-    <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
-    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-    <a href="#" class="card-link">Card link</a>
-    <a href="#" class="card-link">Another link</a>
-  </div>
-</div>
 
         //Accommodations Art Galleries Outdoors Attractions Farms Museums Farmers' Market Countryside Shopping Sports and Recreation Waterfalls Performing Arts
         for (let i = 0; i < tourism.features.length; i++) {

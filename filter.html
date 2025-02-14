@@ -15,49 +15,53 @@
             width: 30px;
             height: 30px;
         }
-        .input-group {
-            max-width: 300px;
-        }
-        .btn {
-            min-width: 100px;
+
+        .form-control .form-select {
+            width: 200%;
         }
     </style>
 </head>
 <body>
     <div id="map"></div><br>
-    <div class="row">
-    <div class="col">
-      1 of 3
+    <div class="container">
+        <div class="row ">
+            <div class="col-12 col-lg-4 mt-2">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="address" placeholder="Enter Address">
+                    <button id="search" type="button" class="btn btn-primary">Search</button>
+                </div> 
+            </div>           
+
+            <div class="col-12 col-lg-4 mt-2">
+                <div class="input-group">
+                    <select class="form-select" id="inputGroupSelect" aria-label="Example select with button addon">
+                      <option selected>Choose Type</option>
+                      <option id="1" value="Accommodations">Accommodations</option>
+                      <option id="2" value="Art Galleries">Art Galleries</option>
+                      <option id="3" value="Outdoors">Outdoors</option>
+                      <option id="4" value="Attractions">Attractions</option>
+                      <option id="5" value="Farms">Farms</option>
+                      <option id="6" value="Museums">Museums</option>
+                      <option id="7" value="Farmers' Market">Farmers' Market</option>
+                      <option id="8" value="Countryside">Countryside</option>
+                      <option id="9" value="Shopping">Shopping</option>
+                      <option id="10" value="Sports and Recreation">Sports and Recreation</option>
+                      <option id="11" value="Waterfalls">Waterfalls</option>
+                      <option id="12" value="Performing Arts">Performing Arts</option>
+                    </select>    
+                    <button class="btn btn-primary" type="button">Display All</button>
+                </div>
+                
+            </div>
+
+            <div class="col-12 col-lg-4 mt-2">
+                <button id="findLocation" type="button" class="btn btn-primary">Find My Location</button>
+                <button id="removeLocation" type="button" class="btn btn-primary">Remove Location</button>
+            </div>
+        </div>
     </div>
-    <div class="col">
-      2 of 3
-    </div>
-    <div class="col">
-      3 of 3
-    </div>
-    <input type="text" id="address" placeholder="Enter Address">
-    <button id="search" type="button" class="btn btn-primary">Search</button>
-    <button id="findLocation" type="button" class="btn btn-primary">Find My Location</button>
-    <button id="removeLocation" type="button" class="btn btn-primary">Remove Location</button>
-    <div class="input-group">
-        <select class="form-select" id="inputGroupSelect" aria-label="Example select with button addon">
-          <option selected>Choose Type</option>
-          <option id="1" value="Accommodations">Accommodations</option>
-          <option id="2" value="Art Galleries">Art Galleries</option>
-          <option id="3" value="Outdoors">Outdoors</option>
-          <option id="4" value="Attractions">Attractions</option>
-          <option id="5" value="Farms">Farms</option>
-          <option id="6" value="Museums">Museums</option>
-          <option id="7" value="Farmers' Market">Farmers' Market</option>
-          <option id="8" value="Countryside">Countryside</option>
-          <option id="9" value="Shopping">Shopping</option>
-          <option id="10" value="Sports and Recreation">Sports and Recreation</option>
-          <option id="11" value="Waterfalls">Waterfalls</option>
-          <option id="12" value="Performing Arts">Performing Arts</option>
-        </select>
-        <button class="btn btn-primary" type="button">Button</button>
-        
-      </div>
+    
+    
       
 
     <span id="coords" style="font-size:22px"></span>

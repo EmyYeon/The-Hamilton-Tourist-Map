@@ -33,24 +33,14 @@
             </div>           
 
             <div class="col-12 col-lg-4 mt-2">
-                <div class="input-group">
-                    <select class="form-select" id="inputGroupSelect" aria-label="Example select with button addon">
-                      <option selected>Choose Type</option>
-                      <option id="1" value="Accommodations">Accommodations</option>
-                      <option id="2" value="Art Galleries">Art Galleries</option>
-                      <option id="3" value="Outdoors">Outdoors</option>
-                      <option id="4" value="Attractions">Attractions</option>
-                      <option id="5" value="Farms">Farms</option>
-                      <option id="6" value="Museums">Museums</option>
-                      <option id="7" value="Farmers' Market">Farmers' Market</option>
-                      <option id="8" value="Countryside">Countryside</option>
-                      <option id="9" value="Shopping">Shopping</option>
-                      <option id="10" value="Sports and Recreation">Sports and Recreation</option>
-                      <option id="11" value="Waterfalls">Waterfalls</option>
-                      <option id="12" value="Performing Arts">Performing Arts</option>
-                    </select>    
-                    <button id="all" class="btn btn-primary" type="button">Display All</button>
-                </div>
+                
+                    
+                <button id="all" class="btn btn-primary" type="button">Display All</button>
+                              
+                <button id="art" class="btn btn-primary" type="button">Art & Museums</button>
+                <button id="nature" class="btn btn-primary" type="button">Nature</button>
+                <button id="shopping" class="btn btn-primary" type="button">Shopping</button>
+                <button id="accommodations" class="btn btn-primary" type="button">Accommodations</button>
                 
             </div>
 
@@ -125,33 +115,27 @@
             }
         });
         }
-
-        //Accommodations Art Galleries Outdoors Attractions Farms Museums Farmers' Market Countryside Shopping Sports and Recreation Waterfalls Performing Arts
+ 
         for (let i = 0; i < tourism.features.length; i++) {
-            if (tourism.features[i].properties.CATEGORY === "Accommodations") {
+                // Accommodations Attractions
+            if (tourism.features[i].properties.CATEGORY == "Accommodations" ||
+                tourism.features[i].properties.CATEGORY == "Attractions") {
                 iconOption = "https://maps.google.com/mapfiles/kml/shapes/lodging.png";
-            } else if (tourism.features[i].properties.CATEGORY === "Art Galleries") {
+
+            } else if ( // Art Galleries Museums Performing Arts
+                tourism.features[i].properties.CATEGORY == "Art Galleries" ||
+                tourism.features[i].properties.CATEGORY == "Museums"||
+                tourism.features[i].properties.CATEGORY == "Performing Arts") {            
                 iconOption = "https://maps.google.com/mapfiles/kml/shapes/marina.png";
-            } else if (tourism.features[i].properties.CATEGORY === "Outdoors") {
+
+            } else if ( // Countryside Outdoors   Waterfalls 
+                tourism.features[i].properties.CATEGORY == "Outdoors" ||
+                tourism.features[i].properties.CATEGORY == "Countryside" ||
+                tourism.features[i].properties.CATEGORY == "Waterfalls") {
                 iconOption = "https://maps.google.com/mapfiles/kml/shapes/hiker.png";
-            } else if (tourism.features[i].properties.CATEGORY === "Attractions") {
-                iconOption = "https://maps.google.com/mapfiles/kml/shapes/marina.png";
-            } else if (tourism.features[i].properties.CATEGORY === "Farms") {
-                iconOption = "https://maps.google.com/mapfiles/kml/shapes/horsebackriding.png";
-            } else if (tourism.features[i].properties.CATEGORY === "Museums") {
-                iconOption = "https://maps.google.com/mapfiles/kml/shapes/marina.png";
-            } else if (tourism.features[i].properties.CATEGORY === "Farmers' Market") {
+
+            }  else { // Farms  Farmers' Market Shopping Sports and Recreation  
                 iconOption = "https://maps.google.com/mapfiles/kml/shapes/grocery.png";
-            } else if (tourism.features[i].properties.CATEGORY === "Countryside") {
-                iconOption = "https://maps.google.com/mapfiles/kml/shapes/hiker.png";
-            } else if (tourism.features[i].properties.CATEGORY === "Shopping") {
-                iconOption = "https://maps.google.com/mapfiles/kml/shapes/grocery.png";
-            } else if (tourism.features[i].properties.CATEGORY === "Sports and Recreation") {
-                iconOption = "https://maps.google.com/mapfiles/kml/shapes/play.png";
-            } else if (tourism.features[i].properties.CATEGORY === "Waterfalls") {
-                iconOption = "https://maps.google.com/mapfiles/kml/shapes/water.png";
-            } else { //Performing Arts
-                iconOption = "https://maps.google.com/mapfiles/kml/shapes/arts.png";
             }
 
             const iconContent = document.createElement("img");
@@ -179,25 +163,55 @@
             google.maps.event.addListener(newMarker, "click", markerClicked);
             markers.push(newMarker);          
         }
+
         directionsService = new google.maps.DirectionsService();
         directionsRenderer = new google.maps.DirectionsRenderer();
         directionsRenderer.setMap(map);
         
     }
     let category = document.getElementById("inputGroupSelect"); 
-
+// Accommodations Attractions
+// Art Galleries Museums Performing Arts
+// Countryside Outdoors   Waterfalls 
+// Farms  Farmers' Market Shopping Sports and Recreation 
     //Select to display the type of markers
     function fileterMarkers() {
         for (let i = 0; i < markers.length; i++) {
-            if (markers[i].CATEGORY === category.value) {
+            if (markers[i].CATEGORY == "Accommodations" || markers[i].CATEGORY == "Attractions") {
+                markers[i].position = {lat: tourism.features[i].geometry.coordinates[1],
+                                       lng: tourism.features[i].geometry.coordinates[0]};
+
                 markers[i].setMap(map);
+                console.log("Accommodations: " + markers[i].position);
+            }
+            else if(markers[i].CATEGORY == "Art Galleries" || markers[i].CATEGORY == "Museums" || markers[i].CATEGORY == "Performing Arts") {
+                markers[i].position = {lat: tourism.features[i].geometry.coordinates[1],
+                    lng: tourism.features[i].geometry.coordinates[0]};
+                markers[i].setMap(map);
+                console.log("Art: " + markers[i].position);
+            }
+            else if(markers[i].CATEGORY == "Outdoors" || markers[i].CATEGORY == "Countryside" || markers[i].CATEGORY == "Waterfalls") {
+                markers[i].position = {lat: tourism.features[i].geometry.coordinates[1],
+                    lng: tourism.features[i].geometry.coordinates[0]};
+                markers[i].setMap(map);
+                console.log("Nature: " + markers[i].position);
+            }
+            else if(markers[i].CATEGORY == "Farms" || markers[i].CATEGORY == "Farmers' Market" || markers[i].CATEGORY == "Shopping" || markers[i].CATEGORY == "Sports and Recreation") {
+                markers[i].position = {lat: tourism.features[i].geometry.coordinates[1],
+                    lng: tourism.features[i].geometry.coordinates[0]};
+                markers[i].setMap(map);
+                console.log("Shopping: " + markers[i].position);
             }
             else {
                 markers[i].setMap(null);
+                console.log("No markers found");
             }
         }
     }
-    document.getElementById("inputGroupSelect").addEventListener("change", fileterMarkers);
+    document.getElementById("art").addEventListener("click", fileterMarkers);
+    document.getElementById("nature").addEventListener("click", fileterMarkers);
+    document.getElementById("shopping").addEventListener("click", fileterMarkers);
+    document.getElementById("accommodations").addEventListener("click", fileterMarkers);
     
     //Display all markers
     function displayAll() {

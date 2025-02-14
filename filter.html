@@ -15,33 +15,50 @@
             width: 30px;
             height: 30px;
         }
+        .input-group {
+            max-width: 300px;
+        }
+        .btn {
+            min-width: 100px;
+        }
     </style>
 </head>
 <body>
     <div id="map"></div><br>
+    <div class="row">
+    <div class="col">
+      1 of 3
+    </div>
+    <div class="col">
+      2 of 3
+    </div>
+    <div class="col">
+      3 of 3
+    </div>
     <input type="text" id="address" placeholder="Enter Address">
     <button id="search" type="button" class="btn btn-primary">Search</button>
-    <button id="findLocation" type="button" class="btn btn-primary">Find Location</button>
+    <button id="findLocation" type="button" class="btn btn-primary">Find My Location</button>
     <button id="removeLocation" type="button" class="btn btn-primary">Remove Location</button>
-    
     <div class="input-group">
         <select class="form-select" id="inputGroupSelect" aria-label="Example select with button addon">
           <option selected>Choose Type</option>
-          <option value="1">Accommodations</option>
-          <option value="2">Art Galleries</option>
-          <option value="3">Outdoors</option>
-          <option value="3">Attractions</option>
-          <option value="3">Farms</option>
-          <option value="3">Museums</option>
-          <option value="3">Farmers' Market</option>
-          <option value="3">Countryside</option>
-          <option value="3">Shopping</option>
-          <option value="3">Sports and Recreation</option>
-          <option value="3">Waterfalls</option>
-          <option value="3">Performing Arts</option>
+          <option id="1" value="Accommodations">Accommodations</option>
+          <option id="2" value="Art Galleries">Art Galleries</option>
+          <option id="3" value="Outdoors">Outdoors</option>
+          <option id="4" value="Attractions">Attractions</option>
+          <option id="5" value="Farms">Farms</option>
+          <option id="6" value="Museums">Museums</option>
+          <option id="7" value="Farmers' Market">Farmers' Market</option>
+          <option id="8" value="Countryside">Countryside</option>
+          <option id="9" value="Shopping">Shopping</option>
+          <option id="10" value="Sports and Recreation">Sports and Recreation</option>
+          <option id="11" value="Waterfalls">Waterfalls</option>
+          <option id="12" value="Performing Arts">Performing Arts</option>
         </select>
-        <button class="btn btn-outline-secondary" type="button">Button</button>
+        <button class="btn btn-primary" type="button">Button</button>
+        
       </div>
+      
 
     <span id="coords" style="font-size:22px"></span>
     <span id="details" style="font-size:24px;"></span>
@@ -53,13 +70,14 @@
     <script>
         let map, marker, geoCoder , destMarker, infoWindow, infoContent;
         let markers = [];
-        function initMap() {
-       
+
+        function initMap() { 
         map = new google.maps.Map(document.getElementById("map"), {
             center: { lat: 43.2387, lng: -79.8881 },
             zoom: 12,
             mapId: "2d79b42b15fa4298"
         });
+
         geoCoder = new google.maps.Geocoder();
 
         // Info Window
@@ -80,6 +98,7 @@
         // });
         let infoWindow = new google.maps.InfoWindow();
         
+        //Information for the markers
         function markerClicked() {
             infoWindow.close();
             infoWindow.setContent(
@@ -93,6 +112,7 @@
             infoWindow.open(map, this);
 
         }
+
         //Accommodations Art Galleries Outdoors Attractions Farms Museums Farmers' Market Countryside Shopping Sports and Recreation Waterfalls Performing Arts
         for (let i = 0; i < tourism.features.length; i++) {
             if (tourism.features[i].properties.CATEGORY === "Accommodations") {
@@ -147,77 +167,92 @@
             
         }
     }
+    let category = document.getElementById("inputGroupSelect"); 
 
-        function FindLocation(){
-            navigator.geolocation.getCurrentPosition(geoMarker);
+    function fileterMarkers() {
+        for (let i = 0; i < markers.length; i++) {
+            if (markers[i].CATEGORY === category.value) {
+                markers[i].setMap(map);
+            }
+            else {
+                markers[i].setMap(null);
+            }
         }
+    }
+    document.getElementById("inputGroupSelect").addEventListener("change", fileterMarkers);
+    
+    //Find user's location
+    function FindLocation(){
+        navigator.geolocation.getCurrentPosition(geoMarker);
+    }
 
-        function geoMarker(position){
-            const pos = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-            };
-            
-            const iconLocation = document.createElement("img");
-            iconLocation.src="https://maps.google.com/mapfiles/kml/paddle/pink-stars.png";
-            iconLocation.className="iconClass";
+
+    function geoMarker(position){
+        const pos = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+        };
         
-            map.setCenter(pos);
-                marker = new google.maps.marker.AdvancedMarkerElement({
-                position: pos,
-                map: map,
-                title: "You are here",
-                content: iconLocation
-            });
-        }
-        
-        function RemoveLocation() {
-            if (marker)
-                marker.setMap(null);
-            //marker.position = null;
-        }
+        const iconLocation = document.createElement("img");
+        iconLocation.src="https://maps.google.com/mapfiles/kml/paddle/pink-stars.png";
+        iconLocation.className="iconClass";
+    
+        map.setCenter(pos);
+            marker = new google.maps.marker.AdvancedMarkerElement({
+            position: pos,
+            map: map,
+            title: "You are here",
+            content: iconLocation
+        });
+    }
+    
+    function RemoveLocation() {
+        if (marker)
+            marker.setMap(null);
+        //marker.position = null;
+    }
 
-        document.getElementById("findLocation").addEventListener("click", FindLocation);
-        document.getElementById("removeLocation").addEventListener("click", RemoveLocation); 
-        document.getElementById("search").addEventListener("click", codeAddress);
+    document.getElementById("findLocation").addEventListener("click", FindLocation);
+    document.getElementById("removeLocation").addEventListener("click", RemoveLocation); 
+    document.getElementById("search").addEventListener("click", codeAddress);
 
-        function codeAddress() {
-            const address = document.getElementById("address").value;
-            const iconDestination = document.createElement("img");
-            iconDestination.src="https://maps.google.com/mapfiles/kml/paddle/pink-stars.png";
-            iconDestination.className="iconClass";
+    function codeAddress() {
+        const address = document.getElementById("address").value;
+        const iconDestination = document.createElement("img");
+        iconDestination.src="https://maps.google.com/mapfiles/kml/paddle/pink-stars.png";
+        iconDestination.className="iconClass";
 
 
-            geoCoder.geocode({ address: address }, (results, status) => {
-                if (status === "OK") {
-                    map.setCenter(results[0].geometry.location);
-                    if (destMarker) destMarker.setMap(null);
-                        destMarker = new google.maps.marker.AdvancedMarkerElement({
-                        map: map,
-                        position: results[0].geometry.location,
-                        title: "Destination",
-                        content: iconDestination
-                    });
-                    //geoMarker(results[0].geometry.location);
-                    document.getElementById("coords").innerText = 
-                    "Latitude: " + results[0].geometry.location.lat() + " Longitude: " + results[0].geometry.location.lng();
+        geoCoder.geocode({ address: address }, (results, status) => {
+            if (status === "OK") {
+                map.setCenter(results[0].geometry.location);
+                if (destMarker) destMarker.setMap(null);
+                    destMarker = new google.maps.marker.AdvancedMarkerElement({
+                    map: map,
+                    position: results[0].geometry.location,
+                    title: "Destination",
+                    content: iconDestination
+                });
+                //geoMarker(results[0].geometry.location);
+                document.getElementById("coords").innerText = 
+                "Latitude: " + results[0].geometry.location.lat() + " Longitude: " + results[0].geometry.location.lng();
 
-                } else {
-                    alert("Geocode was not successful for the following reason: " + status);
-                }
-            });
-        //     if (destMarker) {
-        //     destMarker.addListener("click", () => {
-        //         map.setZoom(8);
-        //         map.setCenter(destMarker.getPosition());
-        //         infoWindow.open({
-        //             anchor: destMarker,
-        //             shouldFocus: false
-        //         });
-        //         document.getElementById("details").innerHTML = "Tim Hortons Field";
-        //     });
-        // }
-        }
+            } else {
+                alert("Geocode was not successful for the following reason: " + status);
+            }
+        });
+    //     if (destMarker) {
+    //     destMarker.addListener("click", () => {
+    //         map.setZoom(8);
+    //         map.setCenter(destMarker.getPosition());
+    //         infoWindow.open({
+    //             anchor: destMarker,
+    //             shouldFocus: false
+    //         });
+    //         document.getElementById("details").innerHTML = "Tim Hortons Field";
+    //     });
+    // }
+    }
 
         
 

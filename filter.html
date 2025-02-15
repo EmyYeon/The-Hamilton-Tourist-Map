@@ -64,7 +64,10 @@
         let map, marker,  geoCoder, destMarker, infoWindow, infoContent;
         let markers = [];   
         let directionsService, directionsRenderer;
-
+        let art = ["Art Galleries", "Museums", "Performing Arts"];
+        let nature = ["Outdoors", "Countryside", "Waterfalls"];
+        let shopping =["Shopping", "Farms", "Farmers' Market", "Sports and Recreation"];
+        let accommodations = ["Accommodations", "Attractions"];
         function initMap() { 
         map = new google.maps.Map(document.getElementById("map"), {
             center: { lat: 43.2387, lng: -79.8881 },
@@ -119,20 +122,14 @@
  
         for (let i = 0; i < tourism.features.length; i++) {
                 // Accommodations Attractions
-            if (tourism.features[i].properties.CATEGORY == "Accommodations" ||
-                tourism.features[i].properties.CATEGORY == "Attractions") {
+                const category = tourism.features[i].properties.CATEGORY;
+            if (accommodations.includes(category)) {
                 iconOption = "https://maps.google.com/mapfiles/kml/shapes/lodging.png";
 
-            } else if ( // Art Galleries Museums Performing Arts
-                tourism.features[i].properties.CATEGORY == "Art Galleries" ||
-                tourism.features[i].properties.CATEGORY == "Museums"||
-                tourism.features[i].properties.CATEGORY == "Performing Arts") {            
+            } else if ( art.includes(category)) {   // Art Galleries Museums Performing Arts         
                 iconOption = "https://maps.google.com/mapfiles/kml/shapes/marina.png";
 
-            } else if ( // Countryside Outdoors   Waterfalls 
-                tourism.features[i].properties.CATEGORY == "Outdoors" ||
-                tourism.features[i].properties.CATEGORY == "Countryside" ||
-                tourism.features[i].properties.CATEGORY == "Waterfalls") {
+            } else if ( nature.includes(category)) {// Countryside Outdoors   Waterfalls
                 iconOption = "https://maps.google.com/mapfiles/kml/shapes/hiker.png";
 
             }  else { // Farms  Farmers' Market Shopping Sports and Recreation  
@@ -177,22 +174,7 @@
 // Farms  Farmers' Market Shopping Sports and Recreation 
     //Select to display the type of markers
     
-    let art = ["Art Galleries", "Museums", "Performing Arts"];
-    let nature = ["Outdoors", "Countryside", "Waterfalls"];
-    let shopping =["Shopping", "Farms", "Farmers' Market", "Sports and Recreation"];
-    let accommodations = ["Accommodations", "Attractions"];
-    function filterMarkers(category) {
-        for (let i = 0; i < markers.length; i++) {
-            for (let j = 0; j < category.length; j++) {
-                if (markers[i].CATEGORY == category[j]) {
-                    markers[i].setMap(map);
-                    console.log(category + ": " + markers[i].position);
-                } else {
-                    markers[i].setMap(null);
-                }
-            }   
-        }
-    }
+ 
     function filterMarkers(category) {
         for (let i = 0; i < markers.length; i++) {
             if (category.includes(markers[i].CATEGORY)) {

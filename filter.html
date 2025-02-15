@@ -79,7 +79,11 @@
         geoCoder = new google.maps.Geocoder();
         infoWindow = new google.maps.InfoWindow();
 
-        //Information for the markers
+       
+        /**
+         * Display the Information for the markers when clicked
+         * @param {String} content the content to be displayed in the info window
+         */
         function markerClicked(content) {
             infoWindow.close();
             infoContent = `
@@ -99,9 +103,8 @@
             <div class="card" style="width: 18rem;">
                 <div class="card-body">
                 <h5 class="card-title">Searched Result</h5>               
-                <p><strong>Address:</strong> null</p>
-                <a id="directionButton" class="btn btn-primary">Direction</a>               
-                <p><strong>Coordinates:</strong> null</p>
+                <p><strong>Address:</strong> ${this.ADDRESS}</p>                          
+                <p><strong>Coordinates:</strong> ${this.COORDINATES}</p>
                 </div>
             </div> `;
 
@@ -166,9 +169,7 @@
 
             // Add event listener to the marker in data set
             google.maps.event.addListener(newMarker, "click", markerClicked.bind(newMarker, "data"));
-            
-            google.maps.event.addListener(searchedMarker, "click", markerClicked.bind(searchedMarker, "search"));
-            markers.push(newMarker);          
+                       markers.push(newMarker);          
         }
 
         directionsService = new google.maps.DirectionsService();
@@ -177,7 +178,10 @@
         
     }
 
-    //Select to display the type of markers
+    /**
+     * Select to display the type of markers
+     * @param {Array} category 
+     */
     function filterMarkers(category) {
         for (let i = 0; i < markers.length; i++) {
             if (category.includes(markers[i].CATEGORY)) {
@@ -245,7 +249,7 @@
     let myLocation={};
     //Find user's location
     function FindLocation(){
-        navigator.geolocation.getCurrentPosition(geoMarker);
+        navigator.geolocation.getCurrentPosition(geoMarker, showerror);
     }
     let pos;
     //Display user's location as marker
@@ -271,7 +275,24 @@
         document.getElementById("start").innerText = pos.lat + ", " + pos.lng;
         return pos;
     }
-    
+    //Show error if user's location is not found
+    function showerror(error){
+        console.log("Error: " + error.message);
+        switch(error.code){
+            case error.PERMISSION_DENIED:
+                alert("User denied the request for Geolocation.");
+                break;
+            case error.POSITION_UNAVAILABLE:
+                alert("Location information is unavailable.");
+                break;
+            case error.TIMEOUT:
+                alert("The request to get user location timed out.");
+                break;
+            case error.UNKNOWN_ERROR:
+                alert("An unknown error occurred.");
+                break;
+        }
+    }
     // Removed manully added marker
     function RemoveLocation() {
         if (marker)
@@ -294,12 +315,20 @@
             if (status === "OK") {
                 map.setCenter(results[0].geometry.location);
                 if (searchedMarker) searchedMarker.setMap(null);
-                    searchedMarker = new google.maps.marker.AdvancedMarkerElement({
-                    map: map,
-                    position: results[0].geometry.location,
-                    title: "Destination",
-                    content: iconDestination
+
+                searchedMarker = new google.maps.marker.AdvancedMarkerElement({
+                map: map,
+                position: results[0].geometry.location,
+                title: "Destination",
+                content: iconDestination
                 });
+
+                searchedMarker.ADDRESS = address;
+                searchedMarker.COORDINATES = [results[0].geometry.location.lng(), results[0].geometry.location.lat()];
+
+                // Add event listener to the searched marker
+                google.maps.event.addListener(searchedMarker, "click", markerClicked.bind(searchedMarker, "search"));
+               
                 //geoMarker(results[0].geometry.location);
                 document.getElementById("coords").innerText = 
                 "Latitude: " + results[0].geometry.location.lat() + " Longitude: " + results[0].geometry.location.lng();
@@ -308,7 +337,22 @@
                 alert("Geocode was not successful for the following reason: " + status);
             }
         });
-    //     if (searchedMarker) {
+
+        contentString = `<h3> Address: ${address} </h3>`;
+        const infoWindow = new google.maps.InfoWindow({
+            content: contentString
+        });
+        
+        if (searchedMarker) {
+            searchedMarker.addListener("click", () => {
+                infoWindow.open({
+                    anchor: searchedMarker,
+                    shouldFocus: false
+                });
+                console.log("Searched Marker: " + searchedMarker.position);
+            });
+        }
+        //     if (searchedMarker) {
     //     searchedMarker.addListener("click", () => {
     //         map.setZoom(8);
     //         map.setCenter(searchedMarker.getPosition());

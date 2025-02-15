@@ -84,6 +84,7 @@
             <div class="card" style="width: 18rem;">
                 <div class="card-body">
                 <h5 class="card-title">${this.TITLE}</h5>
+                <p><strong>Catgory:</strong> ${this.CATEGORY}</p>
                 <p><strong>Address:</strong> ${this.ADDRESS}</p>
                 <p><strong>Phone:</strong> ${this.PHONE}</p>
                 <p><strong><a href="${this.URL}" target="_blank">Website</a></strong></p>
@@ -175,43 +176,49 @@
 // Countryside Outdoors   Waterfalls 
 // Farms  Farmers' Market Shopping Sports and Recreation 
     //Select to display the type of markers
-    function fileterMarkers() {
+    
+    let art = ["Art Galleries", "Museums", "Performing Arts"];
+    let nature = ["Outdoors", "Countryside", "Waterfalls"];
+    let shopping =["Shopping", "Farms", "Farmers' Market", "Sports and Recreation"];
+    let accommodations = ["Accommodations", "Attractions"];
+    function filterMarkers(category) {
         for (let i = 0; i < markers.length; i++) {
-            if (markers[i].CATEGORY == "Accommodations" || markers[i].CATEGORY == "Attractions") {
-                markers[i].position = {lat: tourism.features[i].geometry.coordinates[1],
-                                       lng: tourism.features[i].geometry.coordinates[0]};
-
+            for (let j = 0; j < category.length; j++) {
+                if (markers[i].CATEGORY == category[j]) {
+                    markers[i].setMap(map);
+                    console.log(category + ": " + markers[i].position);
+                } else {
+                    markers[i].setMap(null);
+                }
+            }   
+        }
+    }
+    function filterMarkers(category) {
+        for (let i = 0; i < markers.length; i++) {
+            if (category.includes(markers[i].CATEGORY)) {
                 markers[i].setMap(map);
-                console.log("Accommodations: " + markers[i].position);
-            }
-            else if(markers[i].CATEGORY == "Art Galleries" || markers[i].CATEGORY == "Museums" || markers[i].CATEGORY == "Performing Arts") {
-                markers[i].position = {lat: tourism.features[i].geometry.coordinates[1],
-                    lng: tourism.features[i].geometry.coordinates[0]};
-                markers[i].setMap(map);
-                console.log("Art: " + markers[i].position);
-            }
-            else if(markers[i].CATEGORY == "Outdoors" || markers[i].CATEGORY == "Countryside" || markers[i].CATEGORY == "Waterfalls") {
-                markers[i].position = {lat: tourism.features[i].geometry.coordinates[1],
-                    lng: tourism.features[i].geometry.coordinates[0]};
-                markers[i].setMap(map);
-                console.log("Nature: " + markers[i].position);
-            }
-            else if(markers[i].CATEGORY == "Farms" || markers[i].CATEGORY == "Farmers' Market" || markers[i].CATEGORY == "Shopping" || markers[i].CATEGORY == "Sports and Recreation") {
-                markers[i].position = {lat: tourism.features[i].geometry.coordinates[1],
-                    lng: tourism.features[i].geometry.coordinates[0]};
-                markers[i].setMap(map);
-                console.log("Shopping: " + markers[i].position);
-            }
-            else {
+                console.log(category + ": " + markers[i].position);
+            } else {
                 markers[i].setMap(null);
-                console.log("No markers found");
             }
         }
     }
-    document.getElementById("art").addEventListener("click", fileterMarkers);
-    document.getElementById("nature").addEventListener("click", fileterMarkers);
-    document.getElementById("shopping").addEventListener("click", fileterMarkers);
-    document.getElementById("accommodations").addEventListener("click", fileterMarkers);
+    document.getElementById("art").addEventListener("click", () => {
+        filterMarkers(art);
+    });
+
+    document.getElementById("nature").addEventListener("click", () => {
+        filterMarkers(nature);
+    });
+
+    document.getElementById("shopping").addEventListener("click", () => {
+        filterMarkers(shopping);
+
+    });
+
+    document.getElementById("accommodations").addEventListener("click", () => {
+        filterMarkers(accommodations);
+    });
     
     //Display all markers
     function displayAll() {

@@ -52,7 +52,6 @@
         </div>
     </div>
       
-
     <span id="coords" style="font-size:22px"></span>
     <span id="details" style="font-size:24px;"></span>
 
@@ -61,13 +60,15 @@
     </script>
     <script src="tourism.js"></script>
     <script>
-        let map, marker,  geoCoder, destMarker, infoWindow, infoContent;
+        let map, marker,  geoCoder, searchedMarker, infoWindow;
         let markers = [];   
         let directionsService, directionsRenderer;
         let art = ["Art Galleries", "Museums", "Performing Arts"];
         let nature = ["Outdoors", "Countryside", "Waterfalls"];
         let shopping =["Shopping", "Farms", "Farmers' Market", "Sports and Recreation"];
         let accommodations = ["Accommodations", "Attractions"];
+        let infoContent2;
+        
         function initMap() { 
         map = new google.maps.Map(document.getElementById("map"), {
             center: { lat: 43.2387, lng: -79.8881 },
@@ -76,14 +77,12 @@
         });
 
         geoCoder = new google.maps.Geocoder();
-
         infoWindow = new google.maps.InfoWindow();
-        
-        //Information for the markers
-        function markerClicked() {
-            infoWindow.close();
 
-            const infoContent2 = `
+        //Information for the markers
+        function markerClicked(content) {
+            infoWindow.close();
+            infoContent = `
             <div class="card" style="width: 18rem;">
                 <div class="card-body">
                 <h5 class="card-title">${this.TITLE}</h5>
@@ -95,18 +94,25 @@
                 <p><strong>Description:</strong> ${this.DESCRIPTION}</p>
                 <p><strong>Coordinates:</strong> ${this.COORDINATES}</p>
                 </div>
-            </div>
-            `;
-            const infoContent= "<h5>" + this.TITLE + "</h5>" +
-                "<p><strong>Category:</strong> " + this.CATEGORY + "</p>" +
-                "<p><strong>Address:</strong> " + this.ADDRESS + "</p>" +
-                "<p><strong>Phone:</strong> " + this.PHONE + "</p>" +
-                "<p><strong>Website:</strong> <a href='" + this.URL + "' target='_blank'>" + this.URL + "</a></p>" +
-                "<p><strong>Description:</strong> " + this.DESCRIPTION + "</p>";
+            </div> `;
+            infoContent2 = `
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                <h5 class="card-title">Searched Result</h5>               
+                <p><strong>Address:</strong> null</p>
+                <a id="directionButton" class="btn btn-primary">Direction</a>               
+                <p><strong>Coordinates:</strong> null</p>
+                </div>
+            </div> `;
 
-            infoWindow.setContent(infoContent2);
+            if (content == "data") {
+                infoWindow.setContent(infoContent);
+            } else if (content == "search") {
+                infoWindow.setContent(infoContent2);
+            }
             infoWindow.open(map, this);
 
+            // Found the direction button
             infoWindow.addListener("domready", () => {
             const directionButton = document.getElementById("directionButton");
             if (directionButton) {
@@ -118,7 +124,7 @@
                 console.error("Direction button not found!");
             }
         });
-        }
+    }
  
         for (let i = 0; i < tourism.features.length; i++) {
                 // Accommodations Attractions
@@ -158,7 +164,10 @@
             newMarker.DESCRIPTION = tourism.features[i].properties.DESCRIPTION;
             newMarker.COORDINATES = tourism.features[i].geometry.coordinates;
 
-            google.maps.event.addListener(newMarker, "click", markerClicked);
+            // Add event listener to the marker in data set
+            google.maps.event.addListener(newMarker, "click", markerClicked.bind(newMarker, "data"));
+            
+            google.maps.event.addListener(searchedMarker, "click", markerClicked.bind(searchedMarker, "search"));
             markers.push(newMarker);          
         }
 
@@ -167,14 +176,8 @@
         directionsRenderer.setMap(map);
         
     }
-    let category = document.getElementById("inputGroupSelect"); 
-// Accommodations Attractions
-// Art Galleries Museums Performing Arts
-// Countryside Outdoors   Waterfalls 
-// Farms  Farmers' Market Shopping Sports and Recreation 
+
     //Select to display the type of markers
-    
- 
     function filterMarkers(category) {
         for (let i = 0; i < markers.length; i++) {
             if (category.includes(markers[i].CATEGORY)) {
@@ -195,7 +198,6 @@
 
     document.getElementById("shopping").addEventListener("click", () => {
         filterMarkers(shopping);
-
     });
 
     document.getElementById("accommodations").addEventListener("click", () => {
@@ -233,17 +235,6 @@
                     directionsRenderer.setDirections(result);
                 }
             });
-        //     const request = {
-        //     origin: "135 Fennell Avenue West, Hamilton, Ontario",
-        //     destination: "64 Melrose Avenue North, Hamilton, Ontario",
-        //     travelMode: "DRIVING"
-        //   };
-
-            directionsService.route(request, function(result, status) {
-                if (status == 'OK') {
-                    directionsRenderer.setDirections(result);
-                }
-            });
         }
         catch (error) {
             console.log("Error: " + error.message);
@@ -256,7 +247,7 @@
     function FindLocation(){
         navigator.geolocation.getCurrentPosition(geoMarker);
     }
-let pos;
+    let pos;
     //Display user's location as marker
     function geoMarker(position){
         pos = {
@@ -292,19 +283,18 @@ let pos;
     document.getElementById("removeLocation").addEventListener("click", RemoveLocation); 
     document.getElementById("search").addEventListener("click", codeAddress);
 
+    //Search for the address entered by the user
     function codeAddress() {
         const address = document.getElementById("address").value;
         const iconDestination = document.createElement("img");
-        iconDestination.src="https://maps.google.com/mapfiles/kml/paddle/pink-stars.png";
+        iconDestination.src="https://maps.google.com/mapfiles/kml/paddle/purple-stars.png";
         iconDestination.className="iconClass";
-
-
 
         geoCoder.geocode({ address: address }, (results, status) => {
             if (status === "OK") {
                 map.setCenter(results[0].geometry.location);
-                if (destMarker) destMarker.setMap(null);
-                    destMarker = new google.maps.marker.AdvancedMarkerElement({
+                if (searchedMarker) searchedMarker.setMap(null);
+                    searchedMarker = new google.maps.marker.AdvancedMarkerElement({
                     map: map,
                     position: results[0].geometry.location,
                     title: "Destination",
@@ -318,12 +308,12 @@ let pos;
                 alert("Geocode was not successful for the following reason: " + status);
             }
         });
-    //     if (destMarker) {
-    //     destMarker.addListener("click", () => {
+    //     if (searchedMarker) {
+    //     searchedMarker.addListener("click", () => {
     //         map.setZoom(8);
-    //         map.setCenter(destMarker.getPosition());
+    //         map.setCenter(searchedMarker.getPosition());
     //         infoWindow.open({
-    //             anchor: destMarker,
+    //             anchor: searchedMarker,
     //             shouldFocus: false
     //         });
     //         document.getElementById("details").innerHTML = "Tim Hortons Field";

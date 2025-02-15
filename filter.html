@@ -63,11 +63,11 @@
         let map, marker,  geoCoder, searchedMarker, infoWindow;
         let markers = [];   
         let directionsService, directionsRenderer;
+        let infoContent;
         let art = ["Art Galleries", "Museums", "Performing Arts"];
         let nature = ["Outdoors", "Countryside", "Waterfalls"];
         let shopping =["Shopping", "Farms", "Farmers' Market", "Sports and Recreation"];
         let accommodations = ["Accommodations", "Attractions"];
-        let infoContent2;
         
         function initMap() { 
         map = new google.maps.Map(document.getElementById("map"), {
@@ -86,33 +86,33 @@
          */
         function markerClicked(content) {
             infoWindow.close();
-            infoContent = `
-            <div class="card" style="width: 18rem;">
-                <div class="card-body">
-                <h5 class="card-title">${this.TITLE}</h5>
-                <p><strong>Catgory:</strong> ${this.CATEGORY}</p>
-                <p><strong>Address:</strong> ${this.ADDRESS}</p>
-                <p><strong>Phone:</strong> ${this.PHONE}</p>
-                <p><strong><a href="${this.URL}" target="_blank">Website</a></strong></p>
-                <a id="directionButton" class="btn btn-primary">Direction</a>
-                <p><strong>Description:</strong> ${this.DESCRIPTION}</p>
-                <p><strong>Coordinates:</strong> ${this.COORDINATES}</p>
-                </div>
-            </div> `;
-            infoContent2 = `
-            <div class="card" style="width: 18rem;">
-                <div class="card-body">
-                <h5 class="card-title">Searched Result</h5>               
-                <p><strong>Address:</strong> ${this.ADDRESS}</p>                          
-                <p><strong>Coordinates:</strong> ${this.COORDINATES}</p>
-                </div>
-            </div> `;
-
+       
             if (content == "data") {
-                infoWindow.setContent(infoContent);
+                infoContent = `
+                <div class="card" style="width: 18rem;">
+                    <div class="card-body">
+                    <h5 class="card-title">${this.TITLE}</h5>
+                    <p><strong>Catgory:</strong> ${this.CATEGORY}</p>
+                    <p><strong>Address:</strong> ${this.ADDRESS}</p>
+                    <p><strong>Phone:</strong> ${this.PHONE}</p>
+                    <p><strong><a href="${this.URL}" target="_blank">Website</a></strong></p>
+                    <a id="directionButton" class="btn btn-primary">Direction</a>
+                    <p><strong>Description:</strong> ${this.DESCRIPTION}</p>
+                    <p><strong>Coordinates:</strong> ${this.COORDINATES}</p>
+                    </div>
+                </div> `;
             } else if (content == "search") {
-                infoWindow.setContent(infoContent2);
+                infoContent = `
+                <div class="card" style="width: 18rem;">
+                    <div class="card-body">
+                    <h5 class="card-title">Searched Result</h5>               
+                    <p><strong>Address:</strong> ${this.ADDRESS}</p>                          
+                    <p><strong>Coordinates:</strong> ${this.COORDINATES}</p>
+                    <a id="directionButton" class="btn btn-primary">Direction</a>
+                    </div>
+                </div> `;
             }
+            infoWindow.setContent(infoContent);
             infoWindow.open(map, this);
 
             // Found the direction button
@@ -149,6 +149,7 @@
             iconContent.src = iconOption;
             iconContent.className = "iconClass";
             
+            // Create a new marker for all the data set
             newMarker = new google.maps.marker.AdvancedMarkerElement({
                 position: {
                     lat: tourism.features[i].geometry.coordinates[1],
@@ -171,11 +172,64 @@
             google.maps.event.addListener(newMarker, "click", markerClicked.bind(newMarker, "data"));
                        markers.push(newMarker);          
         }
+        
+        /**
+         * Search for the address entered by the user
+         */
+        function codeAddress() {
+            const address = document.getElementById("address").value;
+            const iconDestination = document.createElement("img");
+            iconDestination.src="https://maps.google.com/mapfiles/kml/paddle/purple-stars.png";
+            iconDestination.className="iconClass";
+
+            geoCoder.geocode({ address: address }, (results, status) => {
+                if (status === "OK") {
+                    map.setCenter(results[0].geometry.location);
+                    if (searchedMarker) searchedMarker.setMap(null);
+
+                    searchedMarker = new google.maps.marker.AdvancedMarkerElement({
+                    map: map,
+                    position: results[0].geometry.location,
+                    title: "Destination",
+                    content: iconDestination
+                    });
+
+                    searchedMarker.ADDRESS = address;
+                    searchedMarker.COORDINATES = [results[0].geometry.location.lng(), results[0].geometry.location.lat()];
+
+                    // Add event listener to the searched marker
+                    google.maps.event.addListener(searchedMarker, "click", markerClicked.bind(searchedMarker, "search"));
+                
+                    //geoMarker(results[0].geometry.location);
+                    document.getElementById("coords").innerText = 
+                    "Latitude: " + results[0].geometry.location.lat() + " Longitude: " + results[0].geometry.location.lng();
+
+                } else {
+                    alert("Geocode was not successful for the following reason: " + status);
+                }
+            });
+
+            contentString = `<h3> Address: ${address} </h3>`;
+            const infoWindow = new google.maps.InfoWindow({
+                content: contentString
+            });
+
+            // Open the info window when the searched marker is clicked
+            if (searchedMarker) {
+                searchedMarker.addListener("click", () => {
+                    infoWindow.open({
+                        anchor: searchedMarker,
+                        shouldFocus: false
+                    });
+                    console.log("Searched Marker: " + searchedMarker.position);
+                });
+            }
+        }
+        document.getElementById("search").addEventListener("click", codeAddress);
 
         directionsService = new google.maps.DirectionsService();
         directionsRenderer = new google.maps.DirectionsRenderer();
         directionsRenderer.setMap(map);
-        
     }
 
     /**
@@ -217,7 +271,11 @@
     document.getElementById("all").addEventListener("click", displayAll);
   
     
-    //Calculate route from user's location to the selected marker of destination
+
+    /**
+     * Calculate route from user's location to the selected marker of destination
+     * @param {Array} coordinates 
+     */
     function calcRoute(coordinates) {
         try {
             if (!pos) {
@@ -247,11 +305,12 @@
     
 
     let myLocation={};
+    let pos;
     //Find user's location
     function FindLocation(){
         navigator.geolocation.getCurrentPosition(geoMarker, showerror);
     }
-    let pos;
+   
     //Display user's location as marker
     function geoMarker(position){
         pos = {
@@ -302,73 +361,7 @@
 
     document.getElementById("findLocation").addEventListener("click", FindLocation);
     document.getElementById("removeLocation").addEventListener("click", RemoveLocation); 
-    document.getElementById("search").addEventListener("click", codeAddress);
-
-    //Search for the address entered by the user
-    function codeAddress() {
-        const address = document.getElementById("address").value;
-        const iconDestination = document.createElement("img");
-        iconDestination.src="https://maps.google.com/mapfiles/kml/paddle/purple-stars.png";
-        iconDestination.className="iconClass";
-
-        geoCoder.geocode({ address: address }, (results, status) => {
-            if (status === "OK") {
-                map.setCenter(results[0].geometry.location);
-                if (searchedMarker) searchedMarker.setMap(null);
-
-                searchedMarker = new google.maps.marker.AdvancedMarkerElement({
-                map: map,
-                position: results[0].geometry.location,
-                title: "Destination",
-                content: iconDestination
-                });
-
-                searchedMarker.ADDRESS = address;
-                searchedMarker.COORDINATES = [results[0].geometry.location.lng(), results[0].geometry.location.lat()];
-
-                // Add event listener to the searched marker
-                google.maps.event.addListener(searchedMarker, "click", markerClicked.bind(searchedMarker, "search"));
-               
-                //geoMarker(results[0].geometry.location);
-                document.getElementById("coords").innerText = 
-                "Latitude: " + results[0].geometry.location.lat() + " Longitude: " + results[0].geometry.location.lng();
-
-            } else {
-                alert("Geocode was not successful for the following reason: " + status);
-            }
-        });
-
-        contentString = `<h3> Address: ${address} </h3>`;
-        const infoWindow = new google.maps.InfoWindow({
-            content: contentString
-        });
-        
-        if (searchedMarker) {
-            searchedMarker.addListener("click", () => {
-                infoWindow.open({
-                    anchor: searchedMarker,
-                    shouldFocus: false
-                });
-                console.log("Searched Marker: " + searchedMarker.position);
-            });
-        }
-        //     if (searchedMarker) {
-    //     searchedMarker.addListener("click", () => {
-    //         map.setZoom(8);
-    //         map.setCenter(searchedMarker.getPosition());
-    //         infoWindow.open({
-    //             anchor: searchedMarker,
-    //             shouldFocus: false
-    //         });
-    //         document.getElementById("details").innerHTML = "Tim Hortons Field";
-    //     });
-    // }
-    }
-
-        
-
-        
-        
+     
     </script>
     
 </body>

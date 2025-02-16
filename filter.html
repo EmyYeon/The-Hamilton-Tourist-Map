@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <style>
         #map{
-            height: 730px;
+            height: 667px;
             width: 100%;
         }
         .iconClass{
@@ -38,10 +38,14 @@
             margin-right: 5px;
             padding: 5px;
         }
+        footer {
+                text-align: center;
+                padding: 10px;
+            }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <header><nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
           <a class="navbar-brand" href="#">Hamilton Tourist Map</a>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
@@ -96,10 +100,14 @@
             </form>
           </div>
         </div>
-      </nav>
+      </nav></header>
+    
 
     <div id="map"></div>
 
+    <footer>
+        <p>&copy; 2025 Mohawk College - Yunyu Yang, 000912334</p> 
+    </footer>
       
     <span id="coords" style="font-size:22px"></span>
     <span id="details" style="font-size:24px;"></span>
@@ -146,7 +154,7 @@
                     <p><strong>Phone:</strong> ${this.PHONE}</p>
                     <p><strong>Description:</strong> ${this.DESCRIPTION}</p>
                     
-                        <a href="${this.URL}" class=" btn btn-outline-success">Website</a>
+                        <a href="${this.URL}" target="_blank" class=" btn btn-outline-success">Website</a>
                         <a id="directionButton" href="#" class="btn btn-outline-success">Direction</a>
                     
                     </div>
@@ -250,9 +258,9 @@
                     // Add event listener to the searched marker
                     google.maps.event.addListener(searchedMarker, "click", markerClicked.bind(searchedMarker, "search"));
                 
-                    //geoMarker(results[0].geometry.location);
-                    document.getElementById("coords").innerText = 
-                    "Latitude: " + results[0].geometry.location.lat() + " Longitude: " + results[0].geometry.location.lng();
+                    // //geoMarker(results[0].geometry.location);
+                    // document.getElementById("coords").innerText = 
+                    // "Latitude: " + results[0].geometry.location.lat() + " Longitude: " + results[0].geometry.location.lng();
 
                 } else {
                     alert("Geocode was not successful for the following reason: " + status);
@@ -332,12 +340,11 @@
         }
     }
     document.getElementById("all").addEventListener("click", displayAll);
-  
     
 
     /**
      * Calculate route from user's location to the selected marker of destination
-     * @param {Array} coordinates 
+     * @param {Array} coordinates of the destination
      */
     function calcRoute(coordinates) {
         try {
@@ -353,7 +360,7 @@
             const request = {
                 origin: start,
                 destination: end,
-                travelMode: google.maps.TravelMode.DRIVING
+                travelMode: "DRIVING"
             };
             directionsService.route(request, function(result, status) {
                 if (status == "OK") {
@@ -419,6 +426,8 @@
     function RemoveLocation() {
         if (marker)
             marker.setMap(null);
+        if (searchedMarker)
+            searchedMarker.setMap(null);
         //marker.position = null;
         for (let i = 0; i < markers.length; i++) {
             markers[i].setMap(null);

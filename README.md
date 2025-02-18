@@ -3,7 +3,7 @@ This application is designed for tourists and citizens who want to find tourist 
 ## The data set: 
 Tourism_Points_of_Interest.geojson from [Open Hamilton](https://open.hamilton.ca/)
 ## Technologies
-Used the **Geolocation API** to integrate user location into a web application
-Used a **Geocoding API** to determine GPS co-ordinates from address information
-Use the **Google Maps JavaScript API**, specifically the **Directions Service** and **Directions Renderer** components.
-Use **Bootstrap** to style an application and implement responsive design features
+- Used the **Geolocation API** to integrate user location into a web application
+- Used a **Geocoding API** to determine GPS co-ordinates from address information
+- Use the **Google Maps JavaScript API**, specifically the **Directions Service** and **Directions Renderer** components.
+- Use **Bootstrap** to style an application and implement responsive design features

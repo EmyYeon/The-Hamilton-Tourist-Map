@@ -354,17 +354,30 @@
             }
             
             const start = new google.maps.LatLng(pos.lat , pos.lng);
-
             const end = new google.maps.LatLng(coordinates[1], coordinates[0]);
             console.log("Destination: " + coordinates[1], coordinates[0]);
             const request = {
                 origin: start,
                 destination: end,
-                travelMode: "DRIVING"
+                travelMode: google.maps.TravelMode.DRIVING
             };
             directionsService.route(request, function(result, status) {
                 if (status == "OK") {
                     directionsRenderer.setDirections(result);
+                    const route = result.routes[0].legs[0];
+                    const duration = route.duration.text;
+                    const distance = route.distance.text;
+                    const infoWindowContent = `
+                        <div>
+                            <p><strong>Duration:</strong> ${duration}</p>
+                            <p><strong>Distance:</strong> ${distance}</p>
+                        </div>
+                    `;
+                    const infoWindow = new google.maps.InfoWindow({
+                        content: infoWindowContent,
+                        position: end
+                    });
+                    infoWindow.open(map);
                 }
             });
         }

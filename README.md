@@ -8,4 +8,4 @@ Tourism_Points_of_Interest.geojson from [Open Hamilton](https://open.hamilton.ca
 - Use the **Google Maps JavaScript API**, specifically the **Directions Service** and **Directions Renderer** components.
 - Use **Bootstrap** to style an application and implement responsive design features
 ## How to use this app
-Download this application and install XAMPP, store this map application in C:\xampp\htdocs, and open the filter.html file in the web browser.
+Download this application and install [XAMPP](https://www.apachefriends.org/), store this map application in C:\xampp\htdocs, and open the filter.html file in the web browser.
